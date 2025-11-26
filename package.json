@@ -1,0 +1,25 @@
+{
+  "name": "plaintext-color",
+  "displayName": "PlainTextColor",
+  "description": "Add more color on plain text and AI plugin",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.106.1"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "richtext",
+      "aliases": ["richtext", "richtext"],
+      "extensions": [".rich"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "richtext",
+      "scopeName": "source.rich",
+      "path": "./syntaxes/richtext.tmLanguage.json"
+    }]
+  }
+}
