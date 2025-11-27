@@ -1,32 +1,69 @@
 {
-	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-	"name": "richtext",
-	"patterns": [
-		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#strings"
-		}
-	],
-	"repository": {
-		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.richtext",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
-		},
-		"strings": {
-			"name": "string.quoted.double.richtext",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.richtext",
-					"match": "\\\\."
-				}
-			]
-		}
-	},
-	"scopeName": "source.rich"
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "richtext",
+    "patterns": [
+        { "include": "#transitions" },
+        { "include": "#punctuation" },
+        { "include": "#emphasis" },
+        { "include": "#numbers" }
+    ],
+    "repository": {
+        "transitions": {
+            "patterns": [
+                {
+                    "name": "keyword.control.conditional.richtext",
+                    "match": "\\b([Bb]ecause|[Ss]ince|[Aa]s|Because|Since|As)\\b|因为|由于|既然"
+                },
+                {
+                    "name": "keyword.operator.logical.richtext",
+                    "match": "\\b([Tt]herefore|[Tt]hus|[Ss]o|[Hh]ence|[Cc]onsequently|Therefore|Thus|So|Hence|Consequently)\\b|因此|所以|故而|从而"
+                },
+                {
+                    "name": "keyword.control.exception.richtext",
+                    "match": "\\b([Bb]ut|[Hh]owever|[Yy]et|[Aa]lthough|[Tt]hough|[Ww]hile|But|However|Yet|Although|Though|While)\\b|但是|然而|却|不过|虽然"
+                },
+                {
+                    "name": "keyword.other.richtext",
+                    "match": "\\b([Mm]oreover|[Ff]urthermore|[Aa]dditionally|[Aa]lso|[Nn]ext|[Tt]hen|Moreover|Furthermore|Additionally|Also|Next|Then)\\b|此外|并且|而且|接着|同时|另外"
+                },
+                {
+                    "name": "keyword.control.flow.richtext",
+                    "match": "\\b([Ii]n conclusion|[Ii]n summary|[Oo]verall|[Ff]inally|In conclusion|In summary|Overall|Finally)\\b|总之|综上|总体来看|最后"
+                }
+            ]
+        },
+        "punctuation": {
+            "patterns": [
+                {
+                    "name": "punctuation.terminator.statement.richtext",
+                    "match": "[。!?！？]"
+                },
+                {
+                    "name": "punctuation.separator.comma.richtext",
+                    "match": "[,，、;；]"
+                }
+            ]
+        },
+        "emphasis": {
+            "patterns": [
+                {
+                    "name": "entity.name.function.richtext",
+                    "match": "\\b([Ii]mportant|[Cc]ritical|[Mm]ust|[Ee]ssential|[Kk]ey|Important|Critical|Must|Essential|Key)\\b|重要|关键|必须|核心"
+                },
+                {
+                    "name": "comment.line.richtext",
+                    "match": "\\b([Nn]ote|[Ee]xample|[Ee]\\.[Gg]\\.|[Ii]\\.[Ee]\\.|Note|Example)\\b|注意|例如|比如"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.richtext",
+                    "match": "\\b\\d+(\\.\\d+)?%?\\b|[一二三四五六七八九十百千万]+[个条项点]?"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.rich"
 }

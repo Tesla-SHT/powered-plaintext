@@ -1,25 +1,40 @@
 {
-  "name": "plaintext-color",
-  "displayName": "PlainTextColor",
-  "description": "Add more color on plain text and AI plugin",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.106.1"
-  },
-  "categories": [
-    "Programming Languages"
-  ],
-  "contributes": {
-    "languages": [{
-      "id": "richtext",
-      "aliases": ["richtext", "richtext"],
-      "extensions": [".rich"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "richtext",
-      "scopeName": "source.rich",
-      "path": "./syntaxes/richtext.tmLanguage.json"
-    }]
-  }
+    "name": "plaintext-color",
+    "displayName": "Rich Text Colors",
+    "description": "Colorize plain text with semantic highlighting",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": ["Programming Languages"],
+    "activationEvents": ["onLanguage:richtext"],
+    "main": "./out/extension.js",
+    "contributes": {
+        "languages": [{
+            "id": "richtext",
+            "aliases": ["Rich Text", "richtext"],
+            "extensions": [".txt", ".rtxt", ".rich"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "richtext",
+            "scopeName": "source.rich",
+            "path": "./syntaxes/richtext.tmLanguage.json"
+        }],
+        "commands": [{
+            "command": "richtext.autoFormat",
+            "title": "Rich Text: Auto Format"
+        }]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.85.0",
+        "@types/node": "^20.x",
+        "typescript": "^5.3.0"
+    }
 }
