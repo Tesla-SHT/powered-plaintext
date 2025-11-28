@@ -3,6 +3,12 @@
     "displayName": "Rich Text Colors",
     "description": "Colorize plain text with semantic highlighting",
     "version": "0.0.1",
+    "publisher": "Tesla-SHT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/Tesla-SHT/plaintext-color"
+    },
+    "license": "MIT",
     "engines": {
         "vscode": "^1.85.0"
     },

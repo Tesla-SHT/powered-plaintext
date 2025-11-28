@@ -27,3 +27,13 @@
 
 * To start using your extension with Visual Studio Code copy it into the `<user home>/.vscode/extensions` folder and restart Code.
 * To share your extension with the world, read on https://code.visualstudio.com/api/working-with-extensions/publishing-extension about publishing an extension.
+
+
+## Compile Extension
+- `npm run compile` - Compiles the extension code using TypeScript compiler.
+- `F5` - Launches a new VS Code window with the extension loaded for debugging.
+
+## Generate VSIX Package
+- `npm install -g vsce` - Installs the VS Code Extension Manager globally.
+- `vsce package` - Generates a `.vsix` package file for the extension, which can be shared or published to the VS Code Marketplace.
+- `Ctrl + Shift + P` and select `Extensions: Install from VSIX...` - Installs the generated `.vsix` package into VS Code for testing or usage.
