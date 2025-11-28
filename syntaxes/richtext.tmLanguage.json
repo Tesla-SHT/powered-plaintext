@@ -1,7 +1,87 @@
 {
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
     "name": "richtext",
-    "patterns": [],
-    "repository": {},
+    "patterns": [
+        { "include": "#transitions" },
+        { "include": "#punctuation" },
+        { "include": "#quotes" },
+        { "include": "#bookTitles" },
+        { "include": "#parentheses" },
+        { "include": "#numbers" }
+    ],
+    "repository": {
+        "transitions": {
+            "patterns": [
+                {
+                    "name": "keyword.control.conditional.richtext",
+                    "match": "\\b([Bb]ecause|[Ss]ince|[Aa]s|[Dd]ue to)\\b|因为|由于|既然|鉴于"
+                },
+                {
+                    "name": "keyword.operator.logical.richtext",
+                    "match": "\\b([Tt]herefore|[Tt]hus|[Ss]o|[Hh]ence|[Cc]onsequently|[Aa]ccordingly)\\b|因此|所以|故而|从而|由此"
+                },
+                {
+                    "name": "keyword.control.exception.richtext",
+                    "match": "\\b([Bb]ut|[Hh]owever|[Yy]et|[Aa]lthough|[Tt]hough|[Ww]hile|[Nn]evertheless|[Nn]onetheless|[Oo]n the other hand|[Ii]n contrast|[Cc]onversely)\\b|但是|然而|却|不过|虽然|尽管|相反|反之"
+                },
+                {
+                    "name": "keyword.other.richtext",
+                    "match": "\\b([Mm]oreover|[Ff]urthermore|[Aa]dditionally|[Aa]lso|[Bb]esides|[Ii]n addition|[Ww]hat's more|[Ll]ikewise|[Ss]imilarly)\\b|此外|并且|而且|同时|另外|再者|同样|类似地"
+                },
+                {
+                    "name": "keyword.control.flow.richtext",
+                    "match": "\\b([Ii]n conclusion|[Ii]n summary|[Oo]verall|[Tt]o sum up|[Ii]n short|[Aa]ll in all)\\b|总之|综上|总体来看|总而言之|简而言之"
+                },
+                {
+                    "name": "comment.line.richtext",
+                    "match": "\\b([Ff]or example|[Ff]or instance|[Ss]uch as|[Nn]amely|[Ii]ncluding)\\b|例如|比如|诸如|包括|譬如"
+                },
+                {
+                    "name": "constant.numeric.richtext",
+                    "match": "\\b([Ff]irst(ly)?|[Ss]econd(ly)?|[Tt]hird(ly)?|[Nn]ext|[Tt]hen|[Ff]inally|[Ll]astly|[Ii]nitially|[Tt]o begin with|[Aa]fter that|[Ii]n the end)\\b|首先|其次|第一|第二|第三|然后|接着|再次|最后|终于"
+                }
+            ]
+        },
+        "punctuation": {
+            "patterns": [
+                {
+                    "name": "punctuation.definition.richtext",
+                    "match": "[。，、；：！？,.;:!?]"
+                }
+            ]
+        },
+        "quotes": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.richtext",
+                    "match": "\"[^\"]*\"|'[^']*'"
+                }
+            ]
+        },
+        "bookTitles": {
+            "patterns": [
+                {
+                    "name": "entity.name.type.richtext",
+                    "match": "《[^》]*》"
+                }
+            ]
+        },
+        "parentheses": {
+            "patterns": [
+                {
+                    "name": "comment.block.richtext",
+                    "match": "\\([^)]*\\)|（[^）]*）|【[^】]*】|\\[[^\\]]*\\]"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.richtext",
+                    "match": "\\b\\d+(\\.\\d+)?%?\\b|[一二三四五六七八九十百千万]+[个条项点]?"
+                }
+            ]
+        }
+    },
     "scopeName": "source.rich"
 }
