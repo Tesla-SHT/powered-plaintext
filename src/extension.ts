@@ -6,11 +6,22 @@ let quotesDecorationType: vscode.TextEditorDecorationType;
 let bookTitleDecorationType: vscode.TextEditorDecorationType;
 let parenthesesDecorationType: vscode.TextEditorDecorationType;
 let numbersDecorationType: vscode.TextEditorDecorationType;
+interface SequenceState {
+    counter: number;
+    lastLineNumber: number;
+    lastIndentLevel: number;
+}
+
+let sequenceState: SequenceState = {
+    counter: 0,
+    lastLineNumber: -1,
+    lastIndentLevel: 0
+};
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Rich Text extension activated');
 
-    // 创建装饰类型 - 转折词符号
+    // 转折词符号装饰
     transitionDecorationType = vscode.window.createTextEditorDecorationType({
         before: {
             contentText: '',
@@ -20,31 +31,36 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    // 标点符号装饰 - 使用灰色，柔和显示
+    // 标点符号装饰 - 使用主题颜色或灰色
     punctuationDecorationType = vscode.window.createTextEditorDecorationType({
-        color: '#888888'
+        color: '#888888',
+        opacity: '0.6'  // 添加透明度,更柔和
     });
 
-    // 引号内容装饰 - 使用浅绿色 + 斜体
+    // 引号内容装饰 - 使用字符串颜色
     quotesDecorationType = vscode.window.createTextEditorDecorationType({
         color: '#98C379',
         fontStyle: 'italic'
     });
 
-    // 书名号内容装饰 - 使用浅蓝色 + 中等粗细
+    // 书名号内容装饰 - 使用类型名颜色
     bookTitleDecorationType = vscode.window.createTextEditorDecorationType({
         color: '#61AFEF',
         fontWeight: '500'
     });
 
-    // 括号内容装饰 - 使用浅灰色 + 斜体
+    // 括号内容装饰 - 使用注释颜色
     parenthesesDecorationType = vscode.window.createTextEditorDecorationType({
         color: '#5C6370',
         fontStyle: 'italic'
     });
+
+    // 数字装饰 - 使用数字颜色
     numbersDecorationType = vscode.window.createTextEditorDecorationType({
-        color: '#D19A66'
+        color: '#D19A66',
+        fontWeight: '500'
     });
+
     // 监听文档变化
     let timeout: NodeJS.Timeout | undefined = undefined;
     
@@ -125,21 +141,224 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
     const parenthesesDecorations: vscode.DecorationOptions[] = [];
     const numbersDecorations: vscode.DecorationOptions[] = [];
 
-    // 定义转折词匹配规则
+    // 定义序列词匹配规则 (分类更细致)
+    const sequencePatterns = {
+        starters: {
+            regex: /\b([Ff]irst(ly)?|[Ii]nitially|[Tt]o begin with)\b|首先|第一/g,
+            isStarter: true
+        },
+        continuers: {
+            regex: /\b([Ss]econd(ly)?|[Tt]hird(ly)?|[Nn]ext|[Tt]hen|[Aa]fter that|[Mm]oreover)\b|其次|第二|第三|然后|接着|再次/g,
+            isStarter: false
+        },
+        terminators: {
+            regex: /\b([Ff]inally|[Ll]astly|[Ii]n the end)\b|最后|终于/g,
+            isTerminator: true
+        }
+    };
+
+    // 其他转折词 (不参与序列计数)
     const transitionPatterns = [
         { regex: /\b([Bb]ecause|[Ss]ince|[Aa]s|[Dd]ue to)\b|因为|由于|既然|鉴于/g, symbol: '→' },
         { regex: /\b([Tt]herefore|[Tt]hus|[Ss]o|[Hh]ence|[Cc]onsequently|[Aa]ccordingly)\b|因此|所以|故而|从而|由此/g, symbol: '⇒' },
         { regex: /\b([Bb]ut|[Hh]owever|[Yy]et|[Aa]lthough|[Tt]hough|[Ww]hile|[Nn]evertheless|[Nn]onetheless|[Oo]n the other hand|[Ii]n contrast|[Cc]onversely)\b|但是|然而|却|不过|虽然|尽管|相反|反之/g, symbol: '⇄' },
         { regex: /\b([Mm]oreover|[Ff]urthermore|[Aa]dditionally|[Aa]lso|[Bb]esides|[Ii]n addition|[Ww]hat's more|[Ll]ikewise|[Ss]imilarly)\b|此外|并且|而且|同时|另外|再者|同样|类似地/g, symbol: '⊕' },
-        { regex: /\b([Ii]n conclusion|[Ii]n summary|[Oo]verall|[Ff]inally|[Tt]o sum up|[Ii]n short|[Aa]ll in all)\b|总之|综上|总体来看|最后|总而言之|简而言之/g, symbol: '◆' },
-        { regex: /\b([Ff]or example|[Ff]or instance|[Ss]uch as|[Nn]amely|[Ii]ncluding)\b|例如|比如|诸如|包括|譬如/g, symbol: '📌' },
-        { regex: /\b([Ff]irst|[Ss]econd|[Tt]hird|[Ff]inally|[Nn]ext|[Tt]hen|[Ll]astly)\b|首先|其次|第三|最后|接着|然后/g, symbol: '①' }
+        { regex: /\b([Ii]n conclusion|[Ii]n summary|[Oo]verall|[Tt]o sum up|[Ii]n short|[Aa]ll in all)\b|总之|综上|总体来看|总而言之|简而言之/g, symbol: '◆' },
+        { regex: /\b([Ff]or example|[Ff]or instance|[Ss]uch as|[Nn]amely|[Ii]ncluding)\b|例如|比如|诸如|包括|譬如/g, symbol: '📌' }
     ];
 
+    // 辅助函数: 判断是否应该重置计数器
+    function shouldResetCounter(currentLine: number, currentIndent: number): boolean {
+        // 1. 首次运行
+        if (sequenceState.lastLineNumber === -1) {
+            return true;
+        }
+
+        // 2. 行号间隔超过2行 (中间有空行)
+        const lineGap = currentLine - sequenceState.lastLineNumber;
+        if (lineGap > 2) {
+            return true;
+        }
+
+        // 3. 缩进层级变化 (可能是新的列表)
+        if (Math.abs(currentIndent - sequenceState.lastIndentLevel) > 2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // 辅助函数: 获取缩进层级
+    function getIndentLevel(line: string): number {
+        const match = line.match(/^(\s*)/);
+        return match ? match[1].length : 0;
+    }
+
+    // 辅助函数: 判断是否在有效位置 (句首/句号后)
+    function isValidSequencePosition(line: string, matchIndex: number, matchedWord: string): boolean {
+        // 1. 句首 (前面只有空格/缩进)
+        const beforeText = line.substring(0, matchIndex).trim();
+        
+        // 2. 检查后面的词,排除名词短语
+        const afterMatch = line.substring(matchIndex + matchedWord.length).trim();
+        const nounIndicators = [
+            'place', 'time', 'step', 'thing', 'person', 'day', 'year',
+            'grade', 'prize', 'attempt', 'impression', 'name', 'class',
+            '名', '次', '位', '等', '奖', '课', '名次', '名额'
+        ];
+        
+        // 如果后面紧跟名词指示词,不是序列词
+        for (const indicator of nounIndicators) {
+            if (afterMatch.toLowerCase().startsWith(indicator)) {
+                return false;
+            }
+        }
+
+        // 3. 检查前面是否有冠词/限定词
+        const articlePattern = /\b(the|a|an|this|that|my|your|his|her)\s+$/i;
+        if (articlePattern.test(beforeText)) {
+            return false;
+        }
+
+        // 4. 句首检查
+        if (beforeText === '') {
+            // 额外检查:如果是句首,后面必须跟逗号或句号,才是序列词
+            const hasProperPunctuation = /^[,，.。:：]/.test(afterMatch) || 
+                                        /^ly\b/.test(afterMatch); // firstly
+            if (!hasProperPunctuation && afterMatch.length > 0) {
+                // 进一步检查是否为名词短语
+                return !nounIndicators.some(noun => 
+                    afterMatch.toLowerCase().startsWith(noun)
+                );
+            }
+            return true;
+        }
+
+        // 5. 句号/问号/叹号后
+        if (/[.!?。!?]\s*$/.test(beforeText)) {
+            return true;
+        }
+
+        // 6. 列表符号后 (-, *, 1., •)
+        if (/^[\s\-\*\d•]+[.、)]?\s*$/.test(beforeText)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // 辅助函数: 获取序列符号
+    function getSequenceSymbol(counter: number): string {
+        const symbols = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+        return counter <= 10 ? symbols[counter - 1] : `${counter}`;
+    }
+    
+    // 遍历所有行
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        const indentLevel = getIndentLevel(line);
 
-        // 1. 转折词符号装饰
+        // 检测是否为标题行 (全大写或markdown标题)
+        const isTitleLine = /^#+\s/.test(line) || /^[A-Z\s]+$/.test(line.trim());
+        if (isTitleLine) {
+            sequenceState.counter = 0;
+            sequenceState.lastLineNumber = i;
+            continue;
+        }
+
+        // 1. 处理序列词 (带计数)
+        let sequenceWordFound = false;
+        sequencePatterns.starters.regex.lastIndex = 0;
+        let starterMatch;
+        while ((starterMatch = sequencePatterns.starters.regex.exec(line)) !== null) {
+            const matchedWord = starterMatch[0];
+            if (isValidSequencePosition(line, starterMatch.index, matchedWord)) {
+                sequenceState.counter = 1; // 重置为1
+                sequenceState.lastLineNumber = i;
+                sequenceState.lastIndentLevel = indentLevel;
+                sequenceWordFound = true;
+
+                const startPos = new vscode.Position(i, starterMatch.index);
+                transitionDecorations.push({
+                    range: new vscode.Range(startPos, startPos),
+                    renderOptions: {
+                        before: {
+                            contentText: getSequenceSymbol(sequenceState.counter) + ' ',
+                            color: new vscode.ThemeColor('editorCodeLens.foreground'),
+                            margin: '0 4px 0 0',
+                            fontWeight: 'bold'
+                        }
+                    }
+                });
+            }
+        }
+
+        // 1.2 检测延续词
+        if (!sequenceWordFound) {
+            sequencePatterns.continuers.regex.lastIndex = 0;
+            let continuerMatch;
+            while ((continuerMatch = sequencePatterns.continuers.regex.exec(line)) !== null) {
+                const matchedWord = continuerMatch[0];
+                if (isValidSequencePosition(line, continuerMatch.index, matchedWord)) {
+                    // 检查是否需要重置
+                    if (shouldResetCounter(i, indentLevel)) {
+                        sequenceState.counter = 1;
+                    } else {
+                        sequenceState.counter++;
+                    }
+
+                    sequenceState.lastLineNumber = i;
+                    sequenceState.lastIndentLevel = indentLevel;
+                    sequenceWordFound = true;
+
+                    const startPos = new vscode.Position(i, continuerMatch.index);
+                    transitionDecorations.push({
+                        range: new vscode.Range(startPos, startPos),
+                        renderOptions: {
+                            before: {
+                                contentText: getSequenceSymbol(sequenceState.counter) + ' ',
+                                color: new vscode.ThemeColor('editorCodeLens.foreground'),
+                                margin: '0 4px 0 0',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // 1.3 检测终止词
+        if (!sequenceWordFound) {
+            sequencePatterns.terminators.regex.lastIndex = 0;
+            let terminatorMatch;
+            while ((terminatorMatch = sequencePatterns.terminators.regex.exec(line)) !== null) {
+                const matchedWord = terminatorMatch[0];
+                if (isValidSequencePosition(line, terminatorMatch.index, matchedWord)) {
+                    if (!shouldResetCounter(i, indentLevel)) {
+                        sequenceState.counter++;
+                    }
+
+                    const startPos = new vscode.Position(i, terminatorMatch.index);
+                    transitionDecorations.push({
+                        range: new vscode.Range(startPos, startPos),
+                        renderOptions: {
+                            before: {
+                                contentText: getSequenceSymbol(sequenceState.counter) + ' ',
+                                color: new vscode.ThemeColor('editorCodeLens.foreground'),
+                                margin: '0 4px 0 0',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    });
+
+                    // 终止后重置
+                    sequenceState.counter = 0;
+                    sequenceState.lastLineNumber = i;
+                }
+            }
+        }
+
+        // 2. 处理其他转折词 (不计数)
         for (const pattern of transitionPatterns) {
             let match;
             pattern.regex.lastIndex = 0;
@@ -148,7 +367,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
                 const matchPos = match.index;
                 const startPos = new vscode.Position(i, matchPos);
                 
-                const decoration: vscode.DecorationOptions = {
+                transitionDecorations.push({
                     range: new vscode.Range(startPos, startPos),
                     renderOptions: {
                         before: {
@@ -158,12 +377,11 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
                             fontWeight: 'bold'
                         }
                     }
-                };
-                transitionDecorations.push(decoration);
+                });
             }
         }
 
-        // 2. 标点符号装饰
+        // 3. 标点符号装饰
         const punctuationRegex = /[。，、；：！？,.;:!?]/g;
         let punctMatch;
         while ((punctMatch = punctuationRegex.exec(line)) !== null) {
@@ -174,7 +392,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
             punctuationDecorations.push({ range });
         }
 
-        // 3. 引号内容装饰 (双引号 "..." 和单引号 '...')
+        // 4. 引号内容装饰
         const quoteRegex = /"([^"]*)"|'([^']*)'/g;
         let quoteMatch;
         while ((quoteMatch = quoteRegex.exec(line)) !== null) {
@@ -185,7 +403,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
             quotesDecorations.push({ range });
         }
 
-        // 4. 书名号内容装饰 《...》
+        // 5. 书名号内容装饰
         const bookTitleRegex = /《([^》]*)》/g;
         let bookMatch;
         while ((bookMatch = bookTitleRegex.exec(line)) !== null) {
@@ -196,7 +414,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
             bookTitleDecorations.push({ range });
         }
 
-        // 5. 括号内容装饰 (...)、【...】、[...]
+        // 6. 括号内容装饰
         const parenthesesRegex = /\([^)]*\)|【[^】]*】|\[[^\]]*\]|（[^）]*）/g;
         let parenMatch;
         while ((parenMatch = parenthesesRegex.exec(line)) !== null) {
@@ -207,7 +425,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
             parenthesesDecorations.push({ range });
         }
 
-        // 6. 数字装饰
+        // 7. 数字装饰
         const numbersRegex = /\b\d+(\.\d+)?%?\b|[一二三四五六七八九十百千万]+[个条项点]?/g;
         let numMatch;
         while ((numMatch = numbersRegex.exec(line)) !== null) {
@@ -226,7 +444,6 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
     editor.setDecorations(bookTitleDecorationType, bookTitleDecorations);
     editor.setDecorations(parenthesesDecorationType, parenthesesDecorations);
     editor.setDecorations(numbersDecorationType, numbersDecorations);
-
 }
 
 export function deactivate() {
