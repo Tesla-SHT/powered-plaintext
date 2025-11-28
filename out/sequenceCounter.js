@@ -1,0 +1,204 @@
+"use strict";
+/**
+ * 序列计数器模块
+ * 处理序列词的识别和计数逻辑
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resetSequenceCounter = resetSequenceCounter;
+exports.processSequenceWords = processSequenceWords;
+exports.handleTitleLine = handleTitleLine;
+const vscode = __importStar(require("vscode"));
+const patterns_1 = require("./patterns");
+const utils_1 = require("./utils");
+const decorators_1 = require("./decorators");
+/**
+ * 全局序列状态
+ */
+let sequenceState = {
+    counter: 0,
+    lastLineNumber: -1,
+    lastIndentLevel: 0
+};
+/**
+ * 重置序列计数器
+ */
+function resetSequenceCounter() {
+    sequenceState = {
+        counter: 0,
+        lastLineNumber: -1,
+        lastIndentLevel: 0
+    };
+}
+/**
+ * 判断是否应该重置计数器
+ * @param currentLine 当前行号
+ * @param currentIndent 当前缩进层级
+ * @returns 是否需要重置
+ */
+function shouldResetCounter(currentLine, currentIndent) {
+    // 首次运行
+    if (sequenceState.lastLineNumber === -1) {
+        return true;
+    }
+    // 行号间隔超过2行 (中间有空行)
+    const lineGap = currentLine - sequenceState.lastLineNumber;
+    if (lineGap > 2) {
+        return true;
+    }
+    // 缩进层级变化 (可能是新的列表)
+    if (Math.abs(currentIndent - sequenceState.lastIndentLevel) > 2) {
+        return true;
+    }
+    return false;
+}
+/**
+ * 处理起始词
+ * @param line 文本行
+ * @param lineNumber 行号
+ * @param indentLevel 缩进层级
+ * @returns 装饰选项数组
+ */
+function processStarters(line, lineNumber, indentLevel) {
+    const decorations = [];
+    patterns_1.sequencePatterns.starters.regex.lastIndex = 0;
+    let match;
+    while ((match = patterns_1.sequencePatterns.starters.regex.exec(line)) !== null) {
+        const matchedWord = match[0];
+        if ((0, utils_1.isValidSequencePosition)(line, match.index, matchedWord)) {
+            // 重置为1
+            sequenceState.counter = 1;
+            sequenceState.lastLineNumber = lineNumber;
+            sequenceState.lastIndentLevel = indentLevel;
+            const position = new vscode.Position(lineNumber, match.index);
+            const symbol = (0, utils_1.getSequenceSymbol)(sequenceState.counter);
+            decorations.push((0, decorators_1.createSymbolDecoration)(position, symbol));
+        }
+    }
+    return decorations;
+}
+/**
+ * 处理延续词
+ * @param line 文本行
+ * @param lineNumber 行号
+ * @param indentLevel 缩进层级
+ * @returns 装饰选项数组
+ */
+function processContinuers(line, lineNumber, indentLevel) {
+    const decorations = [];
+    patterns_1.sequencePatterns.continuers.regex.lastIndex = 0;
+    let match;
+    while ((match = patterns_1.sequencePatterns.continuers.regex.exec(line)) !== null) {
+        const matchedWord = match[0];
+        if ((0, utils_1.isValidSequencePosition)(line, match.index, matchedWord)) {
+            // 检查是否需要重置
+            if (shouldResetCounter(lineNumber, indentLevel)) {
+                sequenceState.counter = 1;
+            }
+            else {
+                sequenceState.counter++;
+            }
+            sequenceState.lastLineNumber = lineNumber;
+            sequenceState.lastIndentLevel = indentLevel;
+            const position = new vscode.Position(lineNumber, match.index);
+            const symbol = (0, utils_1.getSequenceSymbol)(sequenceState.counter);
+            decorations.push((0, decorators_1.createSymbolDecoration)(position, symbol));
+        }
+    }
+    return decorations;
+}
+/**
+ * 处理终止词
+ * @param line 文本行
+ * @param lineNumber 行号
+ * @param indentLevel 缩进层级
+ * @returns 装饰选项数组
+ */
+function processTerminators(line, lineNumber, indentLevel) {
+    const decorations = [];
+    patterns_1.sequencePatterns.terminators.regex.lastIndex = 0;
+    let match;
+    while ((match = patterns_1.sequencePatterns.terminators.regex.exec(line)) !== null) {
+        const matchedWord = match[0];
+        if ((0, utils_1.isValidSequencePosition)(line, match.index, matchedWord)) {
+            // 如果不需要重置,则递增
+            if (!shouldResetCounter(lineNumber, indentLevel)) {
+                sequenceState.counter++;
+            }
+            const position = new vscode.Position(lineNumber, match.index);
+            const symbol = (0, utils_1.getSequenceSymbol)(sequenceState.counter);
+            decorations.push((0, decorators_1.createSymbolDecoration)(position, symbol));
+            // 终止后重置
+            sequenceState.counter = 0;
+            sequenceState.lastLineNumber = lineNumber;
+        }
+    }
+    return decorations;
+}
+/**
+ * 处理序列词(起始、延续、终止)
+ * @param line 文本行
+ * @param lineNumber 行号
+ * @returns 装饰选项数组
+ */
+function processSequenceWords(line, lineNumber) {
+    const indentLevel = (0, utils_1.getIndentLevel)(line);
+    let decorations = [];
+    // 1. 检测起始词
+    const starterDecorations = processStarters(line, lineNumber, indentLevel);
+    if (starterDecorations.length > 0) {
+        return starterDecorations;
+    }
+    // 2. 检测延续词
+    const continuerDecorations = processContinuers(line, lineNumber, indentLevel);
+    if (continuerDecorations.length > 0) {
+        return continuerDecorations;
+    }
+    // 3. 检测终止词
+    const terminatorDecorations = processTerminators(line, lineNumber, indentLevel);
+    if (terminatorDecorations.length > 0) {
+        return terminatorDecorations;
+    }
+    return decorations;
+}
+/**
+ * 处理标题行(遇到标题重置计数器)
+ * @param lineNumber 行号
+ */
+function handleTitleLine(lineNumber) {
+    sequenceState.counter = 0;
+    sequenceState.lastLineNumber = lineNumber;
+}
+//# sourceMappingURL=sequenceCounter.js.map
