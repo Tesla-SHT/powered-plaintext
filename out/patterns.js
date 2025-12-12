@@ -32,27 +32,27 @@ exports.sequencePatterns = {
  */
 exports.transitionPatterns = [
     {
-        regex: /\b([Bb]ecause|[Ss]ince|[Aa]s|[Dd]ue to)\b|因为|由于|既然|鉴于/g,
+        regex: /\b([B]ecause|[S]ince|[A]s|[D]ue to)\b|因为|由于|既然|鉴于/g,
         symbol: '→'
     },
     {
-        regex: /\b([Tt]herefore|[Tt]hus|[Ss]o|[Hh]ence|[Cc]onsequently|[Aa]ccordingly)\b|因此|所以|故而|从而|由此/g,
+        regex: /\b([T]herefore|[T]hus|[S]o|[H]ence|[C]onsequently|[A]ccordingly)\b|因此|所以|故而|从而|由此/g,
         symbol: '⇒'
     },
     {
-        regex: /\b([Bb]ut|[Hh]owever|[Yy]et|[Aa]lthough|[Tt]hough|[Ww]hile|[Nn]evertheless|[Nn]onetheless|[Oo]n the other hand|[Ii]n contrast|[Cc]onversely)\b|但是|然而|却|不过|虽然|尽管|相反|反之/g,
+        regex: /\b([B]ut|[H]owever|[Y]et|[A]lthough|[T]hough|[W]hile|[N]evertheless|[N]onetheless|[O]n the other hand|[I]n contrast|[C]onversely)\b|但是|然而|却|不过|虽然|尽管|相反|反之/g,
         symbol: '⇄'
     },
     {
-        regex: /\b([Mm]oreover|[Ff]urthermore|[Aa]dditionally|[Aa]lso|[Bb]esides|[Ii]n addition|[Ww]hat's more|[Ll]ikewise|[Ss]imilarly)\b|此外|并且|而且|同时|另外|再者|同样|类似地/g,
+        regex: /\b([M]oreover|[F]urthermore|[A]dditionally|[A]lso|[B]esides|[I]n addition|[W]hat's more|[L]ikewise|[S]imilarly)\b|此外|并且|而且|同时|另外|再者|同样|类似地/g,
         symbol: '⊕'
     },
     {
-        regex: /\b([Ii]n conclusion|[Ii]n summary|[Oo]verall|[Tt]o sum up|[Ii]n short|[Aa]ll in all)\b|总之|综上|总体来看|总而言之|简而言之/g,
+        regex: /\b([I]n conclusion|[I]n summary|[O]verall|[T]o sum up|[I]n short|[A]ll in all)\b|总之|综上|总体来看|总而言之|简而言之/g,
         symbol: '◆'
     },
     {
-        regex: /\b([Ff]or example|[Ff]or instance|[Ss]uch as|[Nn]amely|[Ii]ncluding)\b|例如|比如|诸如|包括|譬如/g,
+        regex: /\b([F]or example|[F]or instance|[S]uch as|[N]amely|[I]ncluding)\b|例如|比如|诸如|包括|譬如/g,
         symbol: '📌'
     }
 ];

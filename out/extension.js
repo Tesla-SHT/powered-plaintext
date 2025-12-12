@@ -87,7 +87,7 @@ function activate(context) {
  * @param editor 文本编辑器
  */
 function updateDecorations(editor) {
-    if (!editor || editor.document.languageId !== 'richtext') {
+    if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
         return;
     }
     const text = editor.document.getText();
@@ -116,7 +116,7 @@ function updateDecorations(editor) {
  */
 async function autoFormatDocument() {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document.languageId !== 'richtext') {
+    if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
         vscode.window.showWarningMessage('请在 Rich Text 文件中使用此命令');
         return;
     }

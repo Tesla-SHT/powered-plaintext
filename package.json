@@ -2,9 +2,10 @@
     "name": "plaintext-color",
     "displayName": "Rich Text Colors",
     "description": "Colorize plain text with semantic highlighting",
-    "version": "0.0.1",
+    "icon": "images/Icon.png",
+    "version": "0.0.2",
     "publisher": "Tesla-SHT",
-      "repository": {
+    "repository": {
         "type": "git",
         "url": "https://github.com/Tesla-SHT/plaintext-color"
     },
@@ -12,25 +13,49 @@
     "engines": {
         "vscode": "^1.85.0"
     },
-    "categories": ["Programming Languages"],
-    "activationEvents": ["onLanguage:richtext"],
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:richtext",
+        "onLanguage:latex"
+    ],
     "main": "./out/extension.js",
     "contributes": {
-        "languages": [{
-            "id": "richtext",
-            "aliases": ["Rich Text", "richtext"],
-            "extensions": [".txt", ".rtxt", ".rich"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "richtext",
-            "scopeName": "source.rich",
-            "path": "./syntaxes/richtext.tmLanguage.json"
-        }],
-        "commands": [{
-            "command": "richtext.autoFormat",
-            "title": "Rich Text: Auto Format"
-        }]
+        "languages": [
+            {
+                "id": "richtext",
+                "aliases": [
+                    "Rich Text",
+                    "richtext"
+                ],
+                "extensions": [
+                    ".txt",
+                    ".rtxt",
+                    ".rich"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "richtext",
+                "scopeName": "source.rich",
+                "path": "./syntaxes/richtext.tmLanguage.json",
+                "injectTo": [
+                    "text.tex.latex",
+                    "text.tex.latex.beamer",
+                    "text.tex",
+                    "source.latex"
+                ]
+            }
+        ],
+        "commands": [
+            {
+                "command": "richtext.autoFormat",
+                "title": "Rich Text: Auto Format"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
