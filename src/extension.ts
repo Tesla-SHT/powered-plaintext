@@ -4,7 +4,8 @@
  */
 
 import * as vscode from 'vscode';
-import { initializeDecorations, applyDecorations, processTransitionWords, disposeDecorations } from './decorators';
+import { initializeDecorations, applyDecorations, createDecorationCollection, processTransitionWords, disposeDecorations } from './decorators';
+import { refreshPatterns, shouldInsertParagraphBreak } from './patterns';
 import { processSequenceWords, handleTitleLine, resetSequenceCounter } from './sequenceCounter';
 import { isTitleLine } from './utils';
 
@@ -13,6 +14,8 @@ import { isTitleLine } from './utils';
  */
 export function activate(context: vscode.ExtensionContext) {
     console.log('Rich Text extension activated');
+
+    refreshPatterns();
 
     // 初始化装饰器
     initializeDecorations();
@@ -48,6 +51,16 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }, null, context.subscriptions);
 
+    vscode.workspace.onDidChangeConfiguration(event => {
+        if (!event.affectsConfiguration('poweredPlaintext')) {
+            return;
+        }
+
+        refreshPatterns();
+        resetSequenceCounter();
+        triggerUpdateDecorations(vscode.window.activeTextEditor);
+    }, null, context.subscriptions);
+
     // 注册格式化命令
     const formatCommand = vscode.commands.registerCommand('richtext.autoFormat', async () => {
         await autoFormatDocument();
@@ -67,7 +80,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
 
     const text = editor.document.getText();
     const lines = text.split('\n');
-    const allDecorations: vscode.DecorationOptions[] = [];
+    const decorations = createDecorationCollection();
 
     // 遍历所有行
     for (let i = 0; i < lines.length; i++) {
@@ -81,15 +94,14 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
 
         // 处理序列词(①②③...)
         const sequenceDecorations = processSequenceWords(line, i);
-        allDecorations.push(...sequenceDecorations);
+        decorations.sequence.push(...sequenceDecorations);
 
         // 处理关联词(→⇒⇄...)
-        const transitionDecorations = processTransitionWords(line, i);
-        allDecorations.push(...transitionDecorations);
+        processTransitionWords(line, i, decorations);
     }
 
     // 应用所有装饰
-    applyDecorations(editor, allDecorations);
+    applyDecorations(editor, decorations);
 }
 
 /**
@@ -98,7 +110,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
 async function autoFormatDocument(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
-        vscode.window.showWarningMessage('请在 Rich Text 文件中使用此命令');
+        vscode.window.showWarningMessage('请在 Powered Plain Text 支持的文档中使用此命令');
         return;
     }
 
@@ -109,8 +121,8 @@ async function autoFormatDocument(): Promise<void> {
     for (let i = 0; i < lines.length; i++) {
         formatted.push(lines[i]);
 
-        // 检测观点切换（简单规则：句号后跟关联词）
-        if (lines[i].match(/[。.!?]$/) && lines[i + 1]?.match(/^(However|But|然而|但是)/)) {
+        // 检测观点切换：句末后如果下一行以配置中的逻辑词起始，则插入空行
+        if (/[。.!?]\s*$/.test(lines[i]) && lines[i + 1] && shouldInsertParagraphBreak(lines[i + 1])) {
             formatted.push(''); // 插入空行
         }
     }

@@ -93,18 +93,20 @@ function shouldResetCounter(currentLine, currentIndent) {
  */
 function processStarters(line, lineNumber, indentLevel) {
     const decorations = [];
-    patterns_1.sequencePatterns.starters.regex.lastIndex = 0;
+    const sequencePatterns = (0, patterns_1.getSequencePatterns)();
+    sequencePatterns.starters.regex.lastIndex = 0;
     let match;
-    while ((match = patterns_1.sequencePatterns.starters.regex.exec(line)) !== null) {
+    while ((match = sequencePatterns.starters.regex.exec(line)) !== null) {
         const matchedWord = match[0];
         if ((0, utils_1.isValidSequencePosition)(line, match.index, matchedWord)) {
             // 重置为1
             sequenceState.counter = 1;
             sequenceState.lastLineNumber = lineNumber;
             sequenceState.lastIndentLevel = indentLevel;
-            const position = new vscode.Position(lineNumber, match.index);
+            const startPos = new vscode.Position(lineNumber, match.index);
+            const endPos = new vscode.Position(lineNumber, match.index + matchedWord.length);
             const symbol = (0, utils_1.getSequenceSymbol)(sequenceState.counter);
-            decorations.push((0, decorators_1.createSymbolDecoration)(position, symbol));
+            decorations.push((0, decorators_1.createSequenceDecoration)(new vscode.Range(startPos, endPos), symbol));
         }
     }
     return decorations;
@@ -118,9 +120,10 @@ function processStarters(line, lineNumber, indentLevel) {
  */
 function processContinuers(line, lineNumber, indentLevel) {
     const decorations = [];
-    patterns_1.sequencePatterns.continuers.regex.lastIndex = 0;
+    const sequencePatterns = (0, patterns_1.getSequencePatterns)();
+    sequencePatterns.continuers.regex.lastIndex = 0;
     let match;
-    while ((match = patterns_1.sequencePatterns.continuers.regex.exec(line)) !== null) {
+    while ((match = sequencePatterns.continuers.regex.exec(line)) !== null) {
         const matchedWord = match[0];
         if ((0, utils_1.isValidSequencePosition)(line, match.index, matchedWord)) {
             // 检查是否需要重置
@@ -132,9 +135,10 @@ function processContinuers(line, lineNumber, indentLevel) {
             }
             sequenceState.lastLineNumber = lineNumber;
             sequenceState.lastIndentLevel = indentLevel;
-            const position = new vscode.Position(lineNumber, match.index);
+            const startPos = new vscode.Position(lineNumber, match.index);
+            const endPos = new vscode.Position(lineNumber, match.index + matchedWord.length);
             const symbol = (0, utils_1.getSequenceSymbol)(sequenceState.counter);
-            decorations.push((0, decorators_1.createSymbolDecoration)(position, symbol));
+            decorations.push((0, decorators_1.createSequenceDecoration)(new vscode.Range(startPos, endPos), symbol));
         }
     }
     return decorations;
@@ -148,18 +152,20 @@ function processContinuers(line, lineNumber, indentLevel) {
  */
 function processTerminators(line, lineNumber, indentLevel) {
     const decorations = [];
-    patterns_1.sequencePatterns.terminators.regex.lastIndex = 0;
+    const sequencePatterns = (0, patterns_1.getSequencePatterns)();
+    sequencePatterns.terminators.regex.lastIndex = 0;
     let match;
-    while ((match = patterns_1.sequencePatterns.terminators.regex.exec(line)) !== null) {
+    while ((match = sequencePatterns.terminators.regex.exec(line)) !== null) {
         const matchedWord = match[0];
         if ((0, utils_1.isValidSequencePosition)(line, match.index, matchedWord)) {
             // 如果不需要重置,则递增
             if (!shouldResetCounter(lineNumber, indentLevel)) {
                 sequenceState.counter++;
             }
-            const position = new vscode.Position(lineNumber, match.index);
+            const startPos = new vscode.Position(lineNumber, match.index);
+            const endPos = new vscode.Position(lineNumber, match.index + matchedWord.length);
             const symbol = (0, utils_1.getSequenceSymbol)(sequenceState.counter);
-            decorations.push((0, decorators_1.createSymbolDecoration)(position, symbol));
+            decorations.push((0, decorators_1.createSequenceDecoration)(new vscode.Range(startPos, endPos), symbol));
             // 终止后重置
             sequenceState.counter = 0;
             sequenceState.lastLineNumber = lineNumber;

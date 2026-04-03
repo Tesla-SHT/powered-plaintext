@@ -34,6 +34,35 @@ export function getSequenceSymbol(counter: number): string {
 }
 
 /**
+ * 判断关联词是否位于适合显示提示的位置
+ * 仅在线首、列表项后、或强边界（句末、冒号）后触发，避免句中误判
+ *
+ * @param line 当前行文本
+ * @param matchIndex 匹配位置
+ * @returns 是否为有效关联词位置
+ */
+export function isValidTransitionPosition(
+    line: string,
+    matchIndex: number
+): boolean {
+    const beforeText = line.substring(0, matchIndex).trim();
+
+    if (beforeText === '') {
+        return true;
+    }
+
+    if (/[.!?。！？:：]["'”’）】\]\)]*$/.test(beforeText)) {
+        return true;
+    }
+
+    if (/^[\s\-*\d•]+[.、)]?\s*$/.test(beforeText)) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * 判断序列词是否在有效位置
  * 排除名词短语、句中位置等误判情况
  * 

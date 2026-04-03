@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIndentLevel = getIndentLevel;
 exports.isTitleLine = isTitleLine;
 exports.getSequenceSymbol = getSequenceSymbol;
+exports.isValidTransitionPosition = isValidTransitionPosition;
 exports.isValidSequencePosition = isValidSequencePosition;
 /**
  * 获取文本行的缩进层级
@@ -34,6 +35,27 @@ function isTitleLine(line) {
 function getSequenceSymbol(counter) {
     const symbols = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
     return counter <= 10 ? symbols[counter - 1] : `${counter}`;
+}
+/**
+ * 判断关联词是否位于适合显示提示的位置
+ * 仅在线首、列表项后、或强边界（句末、冒号）后触发，避免句中误判
+ *
+ * @param line 当前行文本
+ * @param matchIndex 匹配位置
+ * @returns 是否为有效关联词位置
+ */
+function isValidTransitionPosition(line, matchIndex) {
+    const beforeText = line.substring(0, matchIndex).trim();
+    if (beforeText === '') {
+        return true;
+    }
+    if (/[.!?。！？:：]["'”’）】\]\)]*$/.test(beforeText)) {
+        return true;
+    }
+    if (/^[\s\-*\d•]+[.、)]?\s*$/.test(beforeText)) {
+        return true;
+    }
+    return false;
 }
 /**
  * 判断序列词是否在有效位置

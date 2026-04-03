@@ -5,9 +5,9 @@
 
 import * as vscode from 'vscode';
 import { SequenceState } from './types';
-import { sequencePatterns } from './patterns';
+import { getSequencePatterns } from './patterns';
 import { getIndentLevel, isValidSequencePosition, getSequenceSymbol } from './utils';
-import { createSymbolDecoration } from './decorators';
+import { createSequenceDecoration } from './decorators';
 
 /**
  * 全局序列状态
@@ -68,6 +68,7 @@ function processStarters(
     indentLevel: number
 ): vscode.DecorationOptions[] {
     const decorations: vscode.DecorationOptions[] = [];
+    const sequencePatterns = getSequencePatterns();
     sequencePatterns.starters.regex.lastIndex = 0;
     
     let match;
@@ -80,9 +81,10 @@ function processStarters(
             sequenceState.lastLineNumber = lineNumber;
             sequenceState.lastIndentLevel = indentLevel;
 
-            const position = new vscode.Position(lineNumber, match.index);
+            const startPos = new vscode.Position(lineNumber, match.index);
+            const endPos = new vscode.Position(lineNumber, match.index + matchedWord.length);
             const symbol = getSequenceSymbol(sequenceState.counter);
-            decorations.push(createSymbolDecoration(position, symbol));
+            decorations.push(createSequenceDecoration(new vscode.Range(startPos, endPos), symbol));
         }
     }
 
@@ -102,6 +104,7 @@ function processContinuers(
     indentLevel: number
 ): vscode.DecorationOptions[] {
     const decorations: vscode.DecorationOptions[] = [];
+    const sequencePatterns = getSequencePatterns();
     sequencePatterns.continuers.regex.lastIndex = 0;
     
     let match;
@@ -119,9 +122,10 @@ function processContinuers(
             sequenceState.lastLineNumber = lineNumber;
             sequenceState.lastIndentLevel = indentLevel;
 
-            const position = new vscode.Position(lineNumber, match.index);
+            const startPos = new vscode.Position(lineNumber, match.index);
+            const endPos = new vscode.Position(lineNumber, match.index + matchedWord.length);
             const symbol = getSequenceSymbol(sequenceState.counter);
-            decorations.push(createSymbolDecoration(position, symbol));
+            decorations.push(createSequenceDecoration(new vscode.Range(startPos, endPos), symbol));
         }
     }
 
@@ -141,6 +145,7 @@ function processTerminators(
     indentLevel: number
 ): vscode.DecorationOptions[] {
     const decorations: vscode.DecorationOptions[] = [];
+    const sequencePatterns = getSequencePatterns();
     sequencePatterns.terminators.regex.lastIndex = 0;
     
     let match;
@@ -153,9 +158,10 @@ function processTerminators(
                 sequenceState.counter++;
             }
 
-            const position = new vscode.Position(lineNumber, match.index);
+            const startPos = new vscode.Position(lineNumber, match.index);
+            const endPos = new vscode.Position(lineNumber, match.index + matchedWord.length);
             const symbol = getSequenceSymbol(sequenceState.counter);
-            decorations.push(createSymbolDecoration(position, symbol));
+            decorations.push(createSequenceDecoration(new vscode.Range(startPos, endPos), symbol));
 
             // 终止后重置
             sequenceState.counter = 0;

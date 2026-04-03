@@ -13,7 +13,7 @@
 * Press `F5` to open a new window with your extension loaded.
 * Open a `.txt`, `.rtxt`, or `.rich` file to test the custom `Rich Text` language mode.
 * Open a `.tex` or `.latex` file to verify that the extension injects extra highlighting into LaTeX without changing the file's language mode.
-* Verify that syntax highlighting and logical symbol hints work as expected.
+* Verify that syntax highlighting, writing profile settings, and logical symbol hints work as expected.
 
 ## Make changes
 
@@ -33,6 +33,16 @@
 - `npm install` - Installs the necessary dependencies for the extension after installing npm.
 - `npm run compile` - Compiles the extension code using TypeScript compiler.
 - `F5` - Launches a new VS Code window with the extension loaded for debugging.
+
+## Settings to verify
+
+- `poweredPlaintext.writingProfile`
+- `poweredPlaintext.enableSymbolHints`
+- `poweredPlaintext.customTransitionWords`
+- `poweredPlaintext.customSequenceWords`
+- `poweredPlaintext.autoFormatParagraphBreakWords`
+
+These settings should update decorations and Auto Format behavior without reloading the extension host.
 
 ## Generate VSIX
 - `npm install -g vsce` - Installs the VS Code Extension Manager globally.

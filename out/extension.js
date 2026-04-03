@@ -41,6 +41,7 @@ exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const decorators_1 = require("./decorators");
+const patterns_1 = require("./patterns");
 const sequenceCounter_1 = require("./sequenceCounter");
 const utils_1 = require("./utils");
 /**
@@ -48,6 +49,7 @@ const utils_1 = require("./utils");
  */
 function activate(context) {
     console.log('Rich Text extension activated');
+    (0, patterns_1.refreshPatterns)();
     // 初始化装饰器
     (0, decorators_1.initializeDecorations)();
     // 监听文档变化
@@ -76,6 +78,14 @@ function activate(context) {
             triggerUpdateDecorations(editor);
         }
     }, null, context.subscriptions);
+    vscode.workspace.onDidChangeConfiguration(event => {
+        if (!event.affectsConfiguration('poweredPlaintext')) {
+            return;
+        }
+        (0, patterns_1.refreshPatterns)();
+        (0, sequenceCounter_1.resetSequenceCounter)();
+        triggerUpdateDecorations(vscode.window.activeTextEditor);
+    }, null, context.subscriptions);
     // 注册格式化命令
     const formatCommand = vscode.commands.registerCommand('richtext.autoFormat', async () => {
         await autoFormatDocument();
@@ -92,7 +102,7 @@ function updateDecorations(editor) {
     }
     const text = editor.document.getText();
     const lines = text.split('\n');
-    const allDecorations = [];
+    const decorations = (0, decorators_1.createDecorationCollection)();
     // 遍历所有行
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -103,13 +113,12 @@ function updateDecorations(editor) {
         }
         // 处理序列词(①②③...)
         const sequenceDecorations = (0, sequenceCounter_1.processSequenceWords)(line, i);
-        allDecorations.push(...sequenceDecorations);
+        decorations.sequence.push(...sequenceDecorations);
         // 处理关联词(→⇒⇄...)
-        const transitionDecorations = (0, decorators_1.processTransitionWords)(line, i);
-        allDecorations.push(...transitionDecorations);
+        (0, decorators_1.processTransitionWords)(line, i, decorations);
     }
     // 应用所有装饰
-    (0, decorators_1.applyDecorations)(editor, allDecorations);
+    (0, decorators_1.applyDecorations)(editor, decorations);
 }
 /**
  * 自动格式化文档
@@ -117,7 +126,7 @@ function updateDecorations(editor) {
 async function autoFormatDocument() {
     const editor = vscode.window.activeTextEditor;
     if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
-        vscode.window.showWarningMessage('请在 Rich Text 文件中使用此命令');
+        vscode.window.showWarningMessage('请在 Powered Plain Text 支持的文档中使用此命令');
         return;
     }
     const text = editor.document.getText();
@@ -125,8 +134,8 @@ async function autoFormatDocument() {
     const formatted = [];
     for (let i = 0; i < lines.length; i++) {
         formatted.push(lines[i]);
-        // 检测观点切换（简单规则：句号后跟关联词）
-        if (lines[i].match(/[。.!?]$/) && lines[i + 1]?.match(/^(However|But|然而|但是)/)) {
+        // 检测观点切换：句末后如果下一行以配置中的逻辑词起始，则插入空行
+        if (/[。.!?]\s*$/.test(lines[i]) && lines[i + 1] && (0, patterns_1.shouldInsertParagraphBreak)(lines[i + 1])) {
             formatted.push(''); // 插入空行
         }
     }

@@ -3,7 +3,7 @@
     "displayName": "Powered Plain Text",
     "description": "Semantic highlighting and logical symbol hints for plain text and LaTeX",
     "icon": "images/Icon.png",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "publisher": "Tesla-SHT",
     "repository": {
         "type": "git",
@@ -16,7 +16,7 @@
         "vscode": "^1.85.0"
     },
     "categories": [
-        "Themes"
+        "Other"
     ],
     "keywords": [
         "plaintext",
@@ -24,11 +24,10 @@
         "syntax-highlighting",
         "semantic-highlighting",
         "latex",
-        "writing"
-    ],
-    "activationEvents": [
-        "onLanguage:richtext",
-        "onLanguage:latex"
+        "writing",
+        "academic-writing",
+        "journaling",
+        "notes"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -70,9 +69,126 @@
         "commands": [
             {
                 "command": "richtext.autoFormat",
-                "title": "Rich Text: Auto Format"
+                "title": "Powered Plain Text: Auto Format"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "Powered Plain Text",
+            "properties": {
+                "poweredPlaintext.writingProfile": {
+                    "type": "string",
+                    "enum": [
+                        "general",
+                        "academic",
+                        "journal",
+                        "notes"
+                    ],
+                    "default": "general",
+                    "markdownDescription": "Choose a built-in vocabulary profile tuned for general writing, academic writing, journaling, or notes."
+                },
+                "poweredPlaintext.enableSymbolHints": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Show logical symbol hints such as →, ⇒, ⇄, ⊕, ◆, and numbered sequence markers in supported documents."
+                },
+                "poweredPlaintext.customTransitionWords": {
+                    "type": "object",
+                    "default": {
+                        "causation": [],
+                        "result": [],
+                        "contrast": [],
+                        "addition": [],
+                        "summary": [],
+                        "example": []
+                    },
+                    "markdownDescription": "Add your own transition words or phrases for each logical category.",
+                    "properties": {
+                        "causation": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "result": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "contrast": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "addition": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "summary": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "example": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        }
+                    }
+                },
+                "poweredPlaintext.customSequenceWords": {
+                    "type": "object",
+                    "default": {
+                        "starters": [],
+                        "continuers": [],
+                        "terminators": []
+                    },
+                    "markdownDescription": "Add your own sequence markers that should receive numbered symbol hints.",
+                    "properties": {
+                        "starters": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "continuers": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        },
+                        "terminators": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
+                        }
+                    }
+                },
+                "poweredPlaintext.autoFormatParagraphBreakWords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "markdownDescription": "Additional words or phrases that should trigger a blank line before a new paragraph when using Auto Format."
+                }
+            }
+        }
     },
     "scripts": {
         "preinstall": "node ./scripts/check-node-version.js",
