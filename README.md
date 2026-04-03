@@ -29,17 +29,19 @@ Logical transition words in text automatically display corresponding symbols (di
 
 Use the command `Rich Text: Auto Format` to automatically insert blank lines at viewpoint transitions.
 
-## Usage
-
-1. Open any `.txt` file
-2. Click the language mode in the bottom right corner and select `Rich Text`
-3. Start typing and enjoy automatic syntax highlighting
-
 ## Supported File Extensions
 
 - `.txt`
 - `.rtxt`
 - `.rich`
+- `.tex`
+- `.latex`
+- 
+## Usage
+
+1. Open any file with a supported extension
+2. Click the language mode in the bottom right corner and select `Rich Text`
+3. Start typing and enjoy automatic syntax highlighting
 
 ## Requirements
 

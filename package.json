@@ -7,7 +7,7 @@
     "publisher": "Tesla-SHT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Tesla-SHT/plaintext-color"
+        "url": "https://github.com/Tesla-SHT/powered-plaintext"
     },
     "license": "MIT",
     "engines": {
