@@ -1,7 +1,7 @@
 {
-    "name": "plaintext-color",
-    "displayName": "Rich Text Colors",
-    "description": "Colorize plain text with semantic highlighting",
+    "name": "powered-plaintext",
+    "displayName": "Powered Plain Text",
+    "description": "Semantic highlighting and logical symbol hints for plain text and LaTeX",
     "icon": "images/Icon.png",
     "version": "0.0.2",
     "publisher": "Tesla-SHT",
@@ -16,7 +16,15 @@
         "vscode": "^1.85.0"
     },
     "categories": [
-        "Programming Languages"
+        "Themes"
+    ],
+    "keywords": [
+        "plaintext",
+        "text",
+        "syntax-highlighting",
+        "semantic-highlighting",
+        "latex",
+        "writing"
     ],
     "activationEvents": [
         "onLanguage:richtext",
@@ -37,6 +45,13 @@
                     ".rich"
                 ],
                 "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "latex",
+                "extensions": [
+                    ".tex",
+                    ".latex"
+                ]
             }
         ],
         "grammars": [

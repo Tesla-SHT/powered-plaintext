@@ -1,10 +1,9 @@
-# Change Log
-
-All notable changes to the "plaintext-color" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
+# Changelog
 ## [Unreleased]
+
+### Changed
+- Updated extension metadata and documentation to describe both Rich Text and LaTeX support more accurately.
+- Added explicit `.latex` language association support in the extension manifest while preserving `LaTeX` mode for LaTeX files.
 
 
 ## [0.0.1] - 2025-11-28
@@ -20,5 +19,5 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 - Renamed project name to "Powered Plain Text"
-  
-   
+
+

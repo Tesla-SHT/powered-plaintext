@@ -1,6 +1,6 @@
 # Powered Plain Text
 
-Add intelligent syntax highlighting and logical symbols to plain text documents for better readability.
+Add semantic highlighting and logical symbol hints to plain text and LaTeX documents for better readability.
 
 ## Features
 
@@ -29,19 +29,25 @@ Logical transition words in text automatically display corresponding symbols (di
 
 Use the command `Rich Text: Auto Format` to automatically insert blank lines at viewpoint transitions.
 
-## Supported File Extensions
+## Supported Files
 
+Rich Text language mode associations:
 - `.txt`
 - `.rtxt`
 - `.rich`
+
+LaTeX enhancement support:
 - `.tex`
 - `.latex`
-- 
+
+`.tex` and `.latex` files stay in the `LaTeX` language mode. This extension injects additional highlighting and logical symbol hints into those files instead of replacing the LaTeX language.
+
 ## Usage
 
-1. Open any file with a supported extension
-2. Click the language mode in the bottom right corner and select `Rich Text`
-3. Start typing and enjoy automatic syntax highlighting
+1. Open a `.txt`, `.rtxt`, `.rich`, `.tex`, or `.latex` file
+2. For `.txt`, `.rtxt`, and `.rich`, select `Rich Text` if VS Code did not auto-detect it
+3. For `.tex` and `.latex`, keep the file in `LaTeX` mode
+4. Start typing and the extension will apply highlighting and symbol hints automatically
 
 ## Requirements
 
@@ -58,4 +64,4 @@ Use the command `Rich Text: Auto Format` to automatically insert blank lines at 
 If you installed Node.js from your Linux distribution with `apt install nodejs npm`, you may get an outdated Node.js version. In that case, switch to a current LTS release from NodeSource or the official Node.js packages before running the build.
 
 ## Release Notes
-Shown in `CHANGELOG.md` file.
+See `CHANGELOG.md`.

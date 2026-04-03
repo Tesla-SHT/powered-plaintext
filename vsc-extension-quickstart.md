@@ -2,17 +2,18 @@
 
 ## What's in the folder
 
-* This folder contains all of the files necessary for your extension.
-* `package.json` - this is the manifest file in which you declare your language support and define the location of the grammar file that has been copied into your extension.
-* `syntaxes/richtext.tmLanguage.json` - this is the Text mate grammar file that is used for tokenization.
-* `language-configuration.json` - this is the language configuration, defining the tokens that are used for comments and brackets.
+* This folder contains the files for the Powered Plain Text extension.
+* `package.json` declares the extension metadata, supported language associations, activation events, and grammar injection.
+* `syntaxes/richtext.tmLanguage.json` defines the TextMate grammar used for semantic highlighting and LaTeX injection.
+* `language-configuration.json` defines the editor behavior for the custom `Rich Text` language mode.
 
 ## Get up and running straight away
 
 * Make sure the language configuration settings in `language-configuration.json` are accurate.
 * Press `F5` to open a new window with your extension loaded.
-* Create a new file with a file name suffix matching your language.
-* Verify that syntax highlighting works and that the language configuration settings are working.
+* Open a `.txt`, `.rtxt`, or `.rich` file to test the custom `Rich Text` language mode.
+* Open a `.tex` or `.latex` file to verify that the extension injects extra highlighting into LaTeX without changing the file's language mode.
+* Verify that syntax highlighting and logical symbol hints work as expected.
 
 ## Make changes
 
