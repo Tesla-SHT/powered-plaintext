@@ -6,6 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIndentLevel = getIndentLevel;
 exports.isTitleLine = isTitleLine;
+exports.isMarkdownFenceLine = isMarkdownFenceLine;
 exports.getSequenceSymbol = getSequenceSymbol;
 exports.isValidTransitionPosition = isValidTransitionPosition;
 exports.isValidSequencePosition = isValidSequencePosition;
@@ -26,6 +27,14 @@ function getIndentLevel(line) {
 function isTitleLine(line) {
     // Markdown 标题或全大写标题
     return /^#+\s/.test(line) || /^[A-Z\s]+$/.test(line.trim());
+}
+/**
+ * 判断是否为 Markdown 围栏代码块分隔行
+ * @param line 文本行
+ * @returns 是否为围栏代码块分隔行
+ */
+function isMarkdownFenceLine(line) {
+    return /^\s*(```+|~~~+)/.test(line);
 }
 /**
  * 获取序列符号

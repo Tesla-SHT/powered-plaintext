@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
     "name": "richtext",
-    "injectionSelector": "L:text.tex.latex, L:text.tex, L:source.latex",
+    "injectionSelector": "L:text.tex.latex, L:text.tex, L:source.latex, L:text.html.markdown - markup.fenced_code.block.markdown - markup.inline.raw.string.markdown",
     "patterns": [
         { "include": "#punctuation" },
         { "include": "#quotes" },

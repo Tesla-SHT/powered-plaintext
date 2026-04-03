@@ -4,7 +4,7 @@
 
 * This folder contains the files for the Powered Plain Text extension.
 * `package.json` declares the extension metadata, supported language associations, activation events, and grammar injection.
-* `syntaxes/richtext.tmLanguage.json` defines the TextMate grammar used for semantic highlighting and LaTeX injection.
+* `syntaxes/richtext.tmLanguage.json` defines the TextMate grammar used for semantic highlighting and injection into Markdown and LaTeX.
 * `language-configuration.json` defines the editor behavior for the custom `Rich Text` language mode.
 
 ## Get up and running straight away
@@ -12,6 +12,7 @@
 * Make sure the language configuration settings in `language-configuration.json` are accurate.
 * Press `F5` to open a new window with your extension loaded.
 * Open a `.txt`, `.rtxt`, or `.rich` file to test the custom `Rich Text` language mode.
+* Open a `.md` file to verify that the extension adds extra highlighting without changing the file's Markdown language mode.
 * Open a `.tex` or `.latex` file to verify that the extension injects extra highlighting into LaTeX without changing the file's language mode.
 * Verify that syntax highlighting, writing profile settings, and logical symbol hints work as expected.
 

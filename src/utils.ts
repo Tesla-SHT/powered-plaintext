@@ -24,6 +24,15 @@ export function isTitleLine(line: string): boolean {
 }
 
 /**
+ * 判断是否为 Markdown 围栏代码块分隔行
+ * @param line 文本行
+ * @returns 是否为围栏代码块分隔行
+ */
+export function isMarkdownFenceLine(line: string): boolean {
+    return /^\s*(```+|~~~+)/.test(line);
+}
+
+/**
  * 获取序列符号
  * @param counter 计数器值
  * @returns 对应的序列符号

@@ -7,7 +7,9 @@ import * as vscode from 'vscode';
 import { initializeDecorations, applyDecorations, createDecorationCollection, processTransitionWords, disposeDecorations } from './decorators';
 import { refreshPatterns, shouldInsertParagraphBreak } from './patterns';
 import { processSequenceWords, handleTitleLine, resetSequenceCounter } from './sequenceCounter';
-import { isTitleLine } from './utils';
+import { isMarkdownFenceLine, isTitleLine } from './utils';
+
+const supportedLanguageIds = new Set(['richtext', 'latex', 'markdown']);
 
 /**
  * 扩展激活函数
@@ -74,17 +76,28 @@ export function activate(context: vscode.ExtensionContext) {
  * @param editor 文本编辑器
  */
 function updateDecorations(editor: vscode.TextEditor | undefined) {
-    if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
+    if (!editor || !supportedLanguageIds.has(editor.document.languageId)) {
         return;
     }
 
     const text = editor.document.getText();
     const lines = text.split('\n');
     const decorations = createDecorationCollection();
+    const isMarkdownDocument = editor.document.languageId === 'markdown';
+    let isInsideMarkdownFence = false;
 
     // 遍历所有行
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+
+        if (isMarkdownDocument && isMarkdownFenceLine(line)) {
+            isInsideMarkdownFence = !isInsideMarkdownFence;
+            continue;
+        }
+
+        if (isInsideMarkdownFence) {
+            continue;
+        }
 
         // 检测标题行
         if (isTitleLine(line)) {
@@ -109,7 +122,7 @@ function updateDecorations(editor: vscode.TextEditor | undefined) {
  */
 async function autoFormatDocument(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
+    if (!editor || !supportedLanguageIds.has(editor.document.languageId)) {
         vscode.window.showWarningMessage('请在 Powered Plain Text 支持的文档中使用此命令');
         return;
     }
@@ -117,9 +130,20 @@ async function autoFormatDocument(): Promise<void> {
     const text = editor.document.getText();
     const lines = text.split('\n');
     const formatted: string[] = [];
+    const isMarkdownDocument = editor.document.languageId === 'markdown';
+    let isInsideMarkdownFence = false;
 
     for (let i = 0; i < lines.length; i++) {
         formatted.push(lines[i]);
+
+        if (isMarkdownDocument && isMarkdownFenceLine(lines[i])) {
+            isInsideMarkdownFence = !isInsideMarkdownFence;
+            continue;
+        }
+
+        if (isInsideMarkdownFence) {
+            continue;
+        }
 
         // 检测观点切换：句末后如果下一行以配置中的逻辑词起始，则插入空行
         if (/[。.!?]\s*$/.test(lines[i]) && lines[i + 1] && shouldInsertParagraphBreak(lines[i + 1])) {

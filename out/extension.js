@@ -44,6 +44,7 @@ const decorators_1 = require("./decorators");
 const patterns_1 = require("./patterns");
 const sequenceCounter_1 = require("./sequenceCounter");
 const utils_1 = require("./utils");
+const supportedLanguageIds = new Set(['richtext', 'latex', 'markdown']);
 /**
  * 扩展激活函数
  */
@@ -97,15 +98,24 @@ function activate(context) {
  * @param editor 文本编辑器
  */
 function updateDecorations(editor) {
-    if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
+    if (!editor || !supportedLanguageIds.has(editor.document.languageId)) {
         return;
     }
     const text = editor.document.getText();
     const lines = text.split('\n');
     const decorations = (0, decorators_1.createDecorationCollection)();
+    const isMarkdownDocument = editor.document.languageId === 'markdown';
+    let isInsideMarkdownFence = false;
     // 遍历所有行
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        if (isMarkdownDocument && (0, utils_1.isMarkdownFenceLine)(line)) {
+            isInsideMarkdownFence = !isInsideMarkdownFence;
+            continue;
+        }
+        if (isInsideMarkdownFence) {
+            continue;
+        }
         // 检测标题行
         if ((0, utils_1.isTitleLine)(line)) {
             (0, sequenceCounter_1.handleTitleLine)(i);
@@ -125,15 +135,24 @@ function updateDecorations(editor) {
  */
 async function autoFormatDocument() {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || (editor.document.languageId !== 'richtext' && editor.document.languageId !== 'latex')) {
+    if (!editor || !supportedLanguageIds.has(editor.document.languageId)) {
         vscode.window.showWarningMessage('请在 Powered Plain Text 支持的文档中使用此命令');
         return;
     }
     const text = editor.document.getText();
     const lines = text.split('\n');
     const formatted = [];
+    const isMarkdownDocument = editor.document.languageId === 'markdown';
+    let isInsideMarkdownFence = false;
     for (let i = 0; i < lines.length; i++) {
         formatted.push(lines[i]);
+        if (isMarkdownDocument && (0, utils_1.isMarkdownFenceLine)(lines[i])) {
+            isInsideMarkdownFence = !isInsideMarkdownFence;
+            continue;
+        }
+        if (isInsideMarkdownFence) {
+            continue;
+        }
         // 检测观点切换：句末后如果下一行以配置中的逻辑词起始，则插入空行
         if (/[。.!?]\s*$/.test(lines[i]) && lines[i + 1] && (0, patterns_1.shouldInsertParagraphBreak)(lines[i + 1])) {
             formatted.push(''); // 插入空行

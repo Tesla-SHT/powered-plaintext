@@ -1,6 +1,11 @@
 # Changelog
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-04
+### Added
+- Added Markdown support while preserving the built-in Markdown language mode.
+
+
 ## [0.1.0] - 2026-04-03
 ### Added
 - Added configurable writing profiles and custom vocabulary settings.

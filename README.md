@@ -1,6 +1,6 @@
 # Powered Plain Text
 
-Powered Plain Text is a VS Code extension for structured plain-text and LaTeX writing. It highlights discourse markers, shows optional logic symbols, and helps you scan notes, drafts, and arguments more easily.
+Powered Plain Text is a VS Code extension for structured plain-text, Markdown, and LaTeX writing. It highlights discourse markers, shows optional logic symbols, and helps you scan notes, drafts, and arguments more easily.
 
 ## What It Does
 
@@ -22,11 +22,17 @@ LaTeX enhancement:
 - `.tex`
 - `.latex`
 
+Markdown enhancement:
+
+- `.md`
+
 For `.tex` and `.latex`, keep the file in `LaTeX` mode. The extension adds highlighting and symbol hints without replacing the LaTeX language.
+
+For `.md`, keep the file in `Markdown` mode. The extension adds its own hints and highlighting without replacing Markdown's base styling.
 
 ## Quick Start
 1. Download and install the extension from the VS Code Marketplace.
-2. Open a file with a supported extension or create a new file, setting the language mode to `Rich Text` or `LaTeX` as appropriate.
+2. Open a file with a supported extension or create a new file, keeping the language mode as `Rich Text`, `Markdown`, or `LaTeX` as appropriate.
 3. Start typing. Highlighting and symbol hints apply automatically.
 4. Run `Powered Plain Text: Auto Format` when you want automatic paragraph breaks.
 

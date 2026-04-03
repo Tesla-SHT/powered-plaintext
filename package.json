@@ -1,9 +1,9 @@
 {
     "name": "powered-plaintext",
     "displayName": "Powered Plain Text",
-    "description": "Semantic highlighting and logical symbol hints for plain text and LaTeX",
+    "description": "Semantic highlighting and logical symbol hints for plain text, Markdown, and LaTeX",
     "icon": "images/Icon.png",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "Tesla-SHT",
     "repository": {
         "type": "git",
@@ -21,6 +21,7 @@
     "keywords": [
         "plaintext",
         "text",
+        "markdown",
         "syntax-highlighting",
         "semantic-highlighting",
         "latex",
@@ -30,6 +31,9 @@
         "notes"
     ],
     "main": "./out/extension.js",
+    "activationEvents": [
+        "onLanguage:markdown"
+    ],
     "contributes": {
         "languages": [
             {
@@ -59,6 +63,7 @@
                 "scopeName": "source.rich",
                 "path": "./syntaxes/richtext.tmLanguage.json",
                 "injectTo": [
+                    "text.html.markdown",
                     "text.tex.latex",
                     "text.tex.latex.beamer",
                     "text.tex",
