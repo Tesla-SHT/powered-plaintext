@@ -1,4 +1,4 @@
-# Rich Text Color
+# Powered Plain Text
 
 Add intelligent syntax highlighting and logical symbols to plain text documents for better readability.
 
@@ -44,17 +44,16 @@ Use the command `Rich Text: Auto Format` to automatically insert blank lines at 
 ## Requirements
 
 - VS Code 1.85.0 or higher
+- Node.js 18 or higher for local development
+- npm 9 or higher for local development
 
-## Known Issues
+## Development Setup
 
-None
+1. Install Node.js 18+ and npm 9+
+2. Run `npm install`
+3. Run `npm run compile`
+
+If you installed Node.js from your Linux distribution with `apt install nodejs npm`, you may get an outdated Node.js version. In that case, switch to a current LTS release from NodeSource or the official Node.js packages before running the build.
 
 ## Release Notes
-
-### 0.0.1
-
-Initial release
-
-### 0.0.2
-
-Add logo and compatibility with LaTeX; added logical symbol hints and reconstructed the project.
+Shown in `CHANGELOG.md` file.

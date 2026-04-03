@@ -1,0 +1,50 @@
+RICH TEXT SHOWCASE
+
+# Product Pitch
+
+"Plain text does not have to look plain." Because structure matters, readers can scan ideas faster.
+Therefore, this extension turns ordinary notes into something closer to a visual outline.
+However, the source text stays clean and copyable.
+
+For example, a short project note can contain numbers like 3, 12.5%, and 2026 without losing readability.
+Moreover, quoted phrases such as "core insight" and 'small detail' stand out immediately.
+In addition, book titles like 《Thinking, Fast and Slow》 are easy to spot.
+Besides, side notes (draft only), [internal reminder], and 【review later】 fade into the background.
+
+# Reasoning Flow
+
+First, define the problem: users often write dense notes, meeting summaries, and research fragments.
+Second, mark relationships clearly, so causes and results are visible at a glance.
+Then, keep examples nearby, because abstract advice is harder to trust.
+Finally, end with a compact takeaway.
+
+Because the writing is structured, conclusions feel earned.
+Thus, even a long paragraph becomes easier to navigate.
+But raw text is still the only thing stored on disk.
+
+# Auto Format Demo
+
+This line ends a viewpoint cleanly.
+However, the next line starts with a contrast word and can be separated by the Auto Format command.
+This line makes a second claim.
+But another contrasting sentence follows immediately and is also a good formatting target.
+
+# Bilingual Example
+
+首先，团队需要一个低成本的写作环境，因为很多材料只适合保存在纯文本里。
+其次，逻辑连接词应该被快速识别，因此读者不必逐句分析结构。
+然后，示例、数字、引号和《书名》要有清晰层次，例如 5 个结论、20% 提升、"关键发现"。
+最后，视觉提示应当增强理解，而不是污染原文。
+
+因为信息密度很高，所以清晰的层次尤其重要。
+然而，好的工具不应该强迫作者学习复杂格式。
+此外，括号内容（补充说明）、[可选步骤]、【临时备注】可以弱化显示。
+总之，这个扩展让普通 txt 文件更接近一份有逻辑感的文稿。
+
+# Edge Cases
+
+The first prize was impressive, but the word first here should read like normal text.
+This is the second time we mentioned a ranking, so second should also remain ordinary.
+My third impression was that punctuation, such as commas, periods, and semicolons; becomes easier to scan.
+
+In conclusion, this single file shows transitions, numbering, punctuation, quotes, book titles, parentheses, and mixed Chinese-English writing in one place.

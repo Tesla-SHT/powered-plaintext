@@ -1,4 +1,4 @@
-# Welcome to your VS Code Extension
+# Welcome to Powered Plain Text VS Code Extension
 
 ## What's in the folder
 
@@ -19,10 +19,6 @@
 * You can relaunch the extension from the debug toolbar after making changes to the files listed above.
 * You can also reload (`Ctrl+R` or `Cmd+R` on Mac) the VS Code window with your extension to load your changes.
 
-## Add more language features
-
-* To add features such as IntelliSense, hovers and validators check out the VS Code extenders documentation at https://code.visualstudio.com/api/language-extensions/overview
-
 ## Install your extension
 
 * To start using your extension with Visual Studio Code copy it into the `<user home>/.vscode/extensions` folder and restart Code.
@@ -30,10 +26,14 @@
 
 
 ## Compile Extension
+- Use Node.js 18+ and npm 9+ for local development.
+- On Debian or Ubuntu, `apt install nodejs npm` may install an older Node.js that cannot run TypeScript 5.
+- If that happens, install a current LTS Node.js release from NodeSource or the official Node.js distribution first: `curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -` and `sudo apt install nodejs`.
+- `npm install` - Installs the necessary dependencies for the extension after installing npm.
 - `npm run compile` - Compiles the extension code using TypeScript compiler.
 - `F5` - Launches a new VS Code window with the extension loaded for debugging.
 
-## Generate VSIX Package
+## Generate VSIX
 - `npm install -g vsce` - Installs the VS Code Extension Manager globally.
 - `vsce package` - Generates a `.vsix` package file for the extension, which can be shared or published to the VS Code Marketplace.
 - `Ctrl + Shift + P` and select `Extensions: Install from VSIX...` - Installs the generated `.vsix` package into VS Code for testing or usage.
